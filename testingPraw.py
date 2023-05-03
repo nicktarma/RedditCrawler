@@ -1,5 +1,5 @@
 # Able to read all the posts when specified a subreddit
-
+import json
 import praw
 reddit = praw.Reddit("bot1")
 
@@ -32,3 +32,15 @@ for post in top:
 
 for post in postDict:
   print(post)
+  print (redditPostToJSONconv(post.title, post.body, post.url, post.permalink))
+
+
+def redditPostToJSONconv (title, body, url, permalink):
+  title_str = "title: %s"%title
+  body_str = "body: %s"%title
+  url_str = "url: %s"%title
+  permalink_str = "permalink: %s"%title
+
+  combined_str = "{" + title_str + ", " + body_str + ", " + url_str + ", " + permalink_str + "}"
+  return json.dump(combined_str)
+    

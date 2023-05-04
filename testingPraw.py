@@ -20,9 +20,9 @@ for post in top:
     postInfo = {}
 
     postInfo["title"] = post.title
-    # print(post.title)
+    print("Title:   ", post.title)
     postInfo["body"] = post.selftext
-    # print(post.selftext)
+    print("Self text:  ", post.selftext)
     postInfo["url"] = post.url
     # print(post.url)
     postInfo["permalink"] = post.permalink
@@ -30,5 +30,8 @@ for post in top:
 
     postDict[post.id] = postInfo
 
-for post in postDict:
-  print(post)
+print(postDict[1][1])
+
+# for post in postDict:
+#   for i in post:
+#     print(i)

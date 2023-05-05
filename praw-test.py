@@ -6,6 +6,8 @@ import praw
 import json
 import requests
 from bs4 import BeautifulSoup
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 import re
 
 # This function is used to utilize the link to extract the titles for the websites within the body.
@@ -68,7 +70,7 @@ ml_subreddit = reddit.subreddit('personalfinance')
 Parsing through the hot posts
 -----------------------------
 '''
-for post in ml_subreddit.hot(limit=2):
+for post in ml_subreddit.hot(limit=100):
 
     # A list to store external link's titles
     externTitles = []

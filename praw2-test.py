@@ -1,49 +1,27 @@
-
-#https://gilberttanner.com/blog/scraping-redditdata/
-#https://www.reddit.com/prefs/apps
-
-
 import praw
 import json
-import urllib3
 import urllib.request
-
-    
 import bs4 as BeautifulSoup
 import re
 
-#Got the following code off of stack overflow and repurposed it to suit the program.
+# Got the following code off of stack overflow and repurposed it to suit the program.
 def getUrlTitle(link):
-    #soup = BeautifulSoup(urllib3.request.urlopen(title),'html.parser')
     with urllib.request.urlopen(link) as url:
-        soup = url.read()
-    #soup = BeautifulSoup(urllib.request.urlopen(link))
+        soup = BeautifulSoup.BeautifulSoup(url.read(), 'html.parser')
     ret_title = soup.title
     print(str(ret_title))
-    return(soup.title)
-
-
-#def getURLlink(jsonObj):
-#    urls = []
-#    x = 0
-#    while(x <= len(jsonObj)): 
-#      var1 = jsonObj.find('](http', x, )
-#      var2 = jsonObj.find(')', var1+1, )
-#      ans = jsonObj[var1+1: var2]
-#      ans += "http"
-#      x = var2
-#      urls.append(ans)
-#    return urls
+    return soup.title
 
 
 def getURLlink(jsonObj):
-    urls = re.findall (r'\]\((http.*?)\)', jsonObj)
+    urls = re.findall(r'\]\((http.*?)\)', jsonObj)
     urls = [url + 'http' for url in urls]
     return urls
 
-reddit = praw.Reddit(   client_id='YAgCOYnP96vukl8AKBhOzw',
-                        client_secret='SCyJkjfbB24ZkGxt-wGm0JcT2xXKqw',
-                        user_agent='praw-test')
+
+reddit = praw.Reddit(client_id='YAgCOYnP96vukl8AKBhOzw',
+                     client_secret='SCyJkjfbB24ZkGxt-wGm0JcT2xXKqw',
+                     user_agent='praw-test')
 
 # This writes the data in the required json format
 posts = []
@@ -62,11 +40,10 @@ Parsing through the hot posts
 externTitles = []
 
 for post in ml_subreddit.hot(limit=2):
-    
     # Check if the post already exists
     if post.id in postIDs:
         continue
-    
+
     # If not, add it to the ID list
     postIDs.add(post.id)
 
@@ -82,23 +59,22 @@ for post in ml_subreddit.hot(limit=2):
 
     for link in urls:
         externTitles.append(getUrlTitle(link))
-        
-        # Adding all of the post's characteristics
-        data = {
-            "title": post.title,
-            "score": post.score,
-            "id": post.id,
-            "subreddit": post.subreddit.display_name,
-            "url": post.url,
-            "num_comments": post.num_comments,
-            "body": post.selftext,
-            "created": post.created_utc,
-            "comments" : comment_list,
-            "External Link Titles" : externTitles
-        }
-        posts.append(data)
-        print(externTitles)
 
+    # Adding all of the post's characteristics
+    data = {
+        "title": post.title,
+        "score": post.score,
+        "id": post.id,
+        "subreddit": post.subreddit.display_name,
+        "url": post.url,
+        "num_comments": post.num_comments,
+        "body": post.selftext,
+        "created": post.created_utc,
+        "comments": comment_list,
+        "External Link Titles": externTitles
+    }
+    posts.append(data)
+    print(externTitles)
 
 print("Len after hot posts: ", len(postIDs))
 

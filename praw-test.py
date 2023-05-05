@@ -1,26 +1,35 @@
-
 #https://gilberttanner.com/blog/scraping-redditdata/
 #https://www.reddit.com/prefs/apps
 
 
 import praw
 import json
-import urllib3
-import urllib.request
-
-    
-import bs4 as BeautifulSoup
+import requests
+from bs4 import BeautifulSoup
 import re
 
-#Got the following code off of stack overflow and repurposed it to suit the program.
+# This function is used to utilize the link to extract the titles for the websites within the body.
 def getUrlTitle(link):
-    #soup = BeautifulSoup(urllib3.request.urlopen(title),'html.parser')
-    with urllib.request.urlopen(link) as url:
-        soup = url.read()
-    #soup = BeautifulSoup(urllib.request.urlopen(link))
-    ret_title = soup.title
-    print(str(ret_title))
-    return(soup.title)
+    page = requests.get(link)
+    soup = BeautifulSoup(page.content, "html.parser")
+    ret_title = soup.title.string
+
+    # print("Inside soup: " , ret_title) # Testing
+
+    # Checks to see whether we actually got the title (kinda slow but easy to understand)
+    if "403" in ret_title:
+        return ''
+    elif "404" in ret_title:
+        return ''
+    elif "denied" in ret_title.lower():
+        return ''
+    elif "not" and "found" in ret_title.lower():
+        return ''
+    elif "too" and "many" and "requests" in ret_title.lower():
+        return ''
+    else:
+        return(ret_title)
+
 
 
 #def getURLlink(jsonObj):
@@ -39,6 +48,7 @@ def getUrlTitle(link):
 def getURLlink(jsonObj):
     urls = re.findall (r'\]\((http.*?)\)', jsonObj)
     urls = [url + 'http' for url in urls]
+    # urls = ["https://en.wikipedia.org/wiki/Badge_Man"]
     return urls
 
 reddit = praw.Reddit(client_id='YAgCOYnP96vukl8AKBhOzw',
@@ -58,10 +68,10 @@ ml_subreddit = reddit.subreddit('personalfinance')
 Parsing through the hot posts
 -----------------------------
 '''
-# A list to store external link's titles
-externTitles = []
-
 for post in ml_subreddit.hot(limit=2):
+
+    # A list to store external link's titles
+    externTitles = []
     
     # Check if the post already exists
     if post.id in postIDs:
@@ -80,26 +90,12 @@ for post in ml_subreddit.hot(limit=2):
     # Parse through the body of the post to look for links
     urls = getURLlink(post.selftext)
 
-    # for link in urls:
-    #     externTitles.append(getUrlTitle(link))
+    # Getting the page's titles for given links
+    for link in urls:
+        title = getUrlTitle(link)
+        if title != '':
+            externTitles.append(title)
         
-<<<<<<< HEAD
-        # Adding all of the post's characteristics
-        data = {
-            "title": post.title,
-            "score": post.score,
-            "id": post.id,
-            "subreddit": post.subreddit.display_name,
-            "url": post.url,
-            "num_comments": post.num_comments,
-            "body": post.selftext,
-            "created": post.created_utc,
-            "comments" : comment_list,
-            "External Link Titles" : externTitles
-        }
-        posts.append(data)
-        print(externTitles)
-=======
     # Adding all of the post's characteristics
     data = {
         "title": post.title,
@@ -114,10 +110,11 @@ for post in ml_subreddit.hot(limit=2):
         "External Link Titles" : externTitles
     }
     posts.append(data)
->>>>>>> 0abd0034dec5c9d204db2706cf5fdc9e31fb6037
 
-
+# Testing
 print("Len after hot posts: ", len(postIDs))
+print(externTitles)
+
 
 '''
 -------------------------------

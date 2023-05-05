@@ -41,9 +41,9 @@ def getURLlink(jsonObj):
     urls = [url + 'http' for url in urls]
     return urls
 
-reddit = praw.Reddit(   client_id='YAgCOYnP96vukl8AKBhOzw',
-                        client_secret='SCyJkjfbB24ZkGxt-wGm0JcT2xXKqw',
-                        user_agent='praw-test')
+reddit = praw.Reddit(client_id='YAgCOYnP96vukl8AKBhOzw',
+                client_secret='SCyJkjfbB24ZkGxt-wGm0JcT2xXKqw',
+                user_agent='praw-test')
 
 # This writes the data in the required json format
 posts = []
@@ -80,9 +80,10 @@ for post in ml_subreddit.hot(limit=2):
     # Parse through the body of the post to look for links
     urls = getURLlink(post.selftext)
 
-    for link in urls:
-        externTitles.append(getUrlTitle(link))
+    # for link in urls:
+    #     externTitles.append(getUrlTitle(link))
         
+<<<<<<< HEAD
         # Adding all of the post's characteristics
         data = {
             "title": post.title,
@@ -98,6 +99,22 @@ for post in ml_subreddit.hot(limit=2):
         }
         posts.append(data)
         print(externTitles)
+=======
+    # Adding all of the post's characteristics
+    data = {
+        "title": post.title,
+        "score": post.score,
+        "id": post.id,
+        "subreddit": post.subreddit.display_name,
+        "url": post.url,
+        "num_comments": post.num_comments,
+        "body": post.selftext,
+        "created": post.created_utc,
+        "comments" : comment_list,
+        "External Link Titles" : externTitles
+    }
+    posts.append(data)
+>>>>>>> 0abd0034dec5c9d204db2706cf5fdc9e31fb6037
 
 
 print("Len after hot posts: ", len(postIDs))

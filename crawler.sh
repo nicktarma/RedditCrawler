@@ -1,10 +1,13 @@
+
 #!/bin/bash
 
-# install necessary libraries
-pip3 install praw urllib3 beautifulsoup4
+# Prompt the user to enter the subreddit name
+echo "Enter subreddit name:"
+read subreddit_name
 
-# running the script
-# nohup runs it in the background
-#> /dev/null ignores output
+# Prompt the user to enter the output filename
+echo "Enter output filename:"
+read output_filename
 
-nohup python3 praw-test.py $1 $2 > /dev/null 2>&1 &
+# Run the Python script with the specified subreddit and output filename
+python reddit_script.py $subreddit_name $output_filename

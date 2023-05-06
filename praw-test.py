@@ -1,4 +1,3 @@
-#https://gilberttanner.com/blog/scraping-redditdata/
 #https://www.reddit.com/prefs/apps
 
 
@@ -6,30 +5,22 @@ import praw
 import json
 import requests
 from bs4 import BeautifulSoup
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
 import re
-#import sys
+import sys
 
-
-
-# Getting the subreddit's name and specifying the output file
-# subreddit_name = sys.argv[1]
-# output_filename = sys.argv[2]
 
 
 
 #This function is used to utilize the link to extract the titles for the websites within the body.
 def getUrlTitle(link):
     
-    print("Link is: ", link)
-    page = requests.get(link)
-    soup = BeautifulSoup(page.content, "html.parser")
     try:
+        page = requests.get(link)
+        soup = BeautifulSoup(page.content, "html.parser")
         ret_title = soup.title.string
         if not isinstance(ret_title, str):
             raise AttributeError
-    except AttributeError:
+    except:
         return ''
 
 
@@ -53,7 +44,6 @@ def getUrlTitle(link):
 def getURLlink(jsonObj):
     urls = re.findall (r'\]\((http.*?)\)', jsonObj)
     urls = [url + 'http' for url in urls]
-    # urls = ["https://en.wikipedia.org/wiki/Badge_Man"]
     return urls
 
 def redditCrawler(subreddit_name, outputfile_name):
@@ -75,7 +65,7 @@ def redditCrawler(subreddit_name, outputfile_name):
     Parsing through the top posts
     -----------------------------
     '''
-    for post in ml_subreddit.top(limit=2):
+    for post in ml_subreddit.top(limit=1000):
 
         # A list to store external link's titles
         externTitles = []
@@ -118,10 +108,6 @@ def redditCrawler(subreddit_name, outputfile_name):
         }
         posts.append(data)
 
-    # Testing
-    print("Len after top posts: ", len(postIDs))
-    print(externTitles)
-
 
     # Write all the posts into data.json
     with open(outputfile_name, 'w') as file:
@@ -134,11 +120,14 @@ def redditCrawler(subreddit_name, outputfile_name):
 #     print(data[8]["score"])
 
 
-def main():
+def main(input_method=None):
 
-    subreddit_name = input("Please enter the name of the subreddit you would like to crawl Ex. (personalfinance): ")
-
-    outputfile_name = input("Please enter the name of the JSON file you would like to store the output into Ex. (data.json) : ")
+    if input_method == 'bash':
+        subreddit_name = sys.argv[1]
+        outputfile_name = sys.argv[2]
+    else:
+        subreddit_name = input("Please enter the name of the subreddit you would like to crawl Ex. (personalfinance): ")
+        outputfile_name = input("Please enter the name of the JSON file you would like to store the output into Ex. (data.json) : ")
 
     redditCrawler(subreddit_name, outputfile_name)
 

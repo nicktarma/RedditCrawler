@@ -1,13 +1,9 @@
-
 #!/bin/bash
 
-# Prompt the user to enter the subreddit name
-echo "Enter subreddit name:"
+echo "Please enter the name of the subreddit you would like to crawl Ex. (personalfinance): "
 read subreddit_name
 
-# Prompt the user to enter the output filename
-echo "Enter output filename:"
+echo "Please enter the name of the JSON file you would like to store the output into Ex. (data.json) : "
 read output_filename
 
-# Run the Python script with the specified subreddit and output filename
-python reddit_script.py $subreddit_name $output_filename
+python praw-test.py "$subreddit_name" "$output_filename" bash

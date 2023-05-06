@@ -31,20 +31,7 @@ def getUrlTitle(link):
         return(ret_title)
 
 
-
-#def getURLlink(jsonObj):
-#    urls = []
-#    x = 0
-#    while(x <= len(jsonObj)): 
-#      var1 = jsonObj.find('](http', x, )
-#      var2 = jsonObj.find(')', var1+1, )
-#      ans = jsonObj[var1+1: var2]
-#      ans += "http"
-#      x = var2
-#      urls.append(ans)
-#    return urls
-
-
+# This function helps gather links from the body
 def getURLlink(jsonObj):
     urls = re.findall (r'\]\((http.*?)\)', jsonObj)
     urls = [url + 'http' for url in urls]

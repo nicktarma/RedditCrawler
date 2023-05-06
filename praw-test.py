@@ -65,8 +65,11 @@ def redditCrawler(subreddit_name, outputfile_name):
     Parsing through the top posts
     -----------------------------
     '''
-    for post in ml_subreddit.top(limit=2):
+    postNumber = 0
+    for post in ml_subreddit.top(limit=1000):
 
+        print("We're on post: ", postNumber)
+        postNumber+=1
         # A list to store external link's titles
         externTitles = []
         
@@ -113,8 +116,10 @@ def redditCrawler(subreddit_name, outputfile_name):
     Parsing through the hot posts
     -----------------------------
     '''
-    for post in ml_subreddit.hot(limit=2):
+    for post in ml_subreddit.hot(limit=1000):
 
+        print("We're on post: ", postNumber)
+        postNumber+=1
         # A list to store external link's titles
         externTitles = []
         
@@ -161,8 +166,10 @@ def redditCrawler(subreddit_name, outputfile_name):
     Parsing through the new posts
     -----------------------------
     '''
-    for post in ml_subreddit.new(limit=2):
+    for post in ml_subreddit.new(limit=1000):
 
+        print("We're on post: ", postNumber)
+        postNumber+=1
         # A list to store external link's titles
         externTitles = []
         

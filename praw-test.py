@@ -108,10 +108,107 @@ def redditCrawler(subreddit_name, outputfile_name):
         }
         posts.append(data)
 
+    '''
+    -----------------------------
+    Parsing through the hot posts
+    -----------------------------
+    '''
+    for post in ml_subreddit.hot(limit=1000):
+
+        # A list to store external link's titles
+        externTitles = []
+        
+        # Check if the post already exists
+        if post.id in postIDs:
+            continue
+        
+        # If not, add it to the ID list
+        postIDs.add(post.id)
+
+        # Adding the all the comments from every post
+        post.comments.replace_more(limit=None)
+        if post.num_comments > 0:
+            comment_list = []
+            for comment in post.comments.list():
+                comment_list.append(comment.body)
+
+        # Parse through the body of the post to look for links
+        urls = getURLlink(post.selftext)
+
+        # Getting the page's titles for given links
+        for link in urls:
+            title = getUrlTitle(link)
+            if title != '':
+                externTitles.append(title)
+            
+        # Adding all of the post's characteristics
+        data = {
+            "title": post.title,
+            "score": post.score,
+            "id": post.id,
+            "subreddit": post.subreddit.display_name,
+            "url": post.url,
+            "num_comments": post.num_comments,
+            "body": post.selftext,
+            "created": post.created_utc,
+            "comments" : comment_list,
+            "External Link Titles" : externTitles
+        }
+        posts.append(data)
+
+    '''
+    -----------------------------
+    Parsing through the new posts
+    -----------------------------
+    '''
+    for post in ml_subreddit.new(limit=1000):
+
+        # A list to store external link's titles
+        externTitles = []
+        
+        # Check if the post already exists
+        if post.id in postIDs:
+            continue
+        
+        # If not, add it to the ID list
+        postIDs.add(post.id)
+
+        # Adding the all the comments from every post
+        post.comments.replace_more(limit=None)
+        if post.num_comments > 0:
+            comment_list = []
+            for comment in post.comments.list():
+                comment_list.append(comment.body)
+
+        # Parse through the body of the post to look for links
+        urls = getURLlink(post.selftext)
+
+        # Getting the page's titles for given links
+        for link in urls:
+            title = getUrlTitle(link)
+            if title != '':
+                externTitles.append(title)
+            
+        # Adding all of the post's characteristics
+        data = {
+            "title": post.title,
+            "score": post.score,
+            "id": post.id,
+            "subreddit": post.subreddit.display_name,
+            "url": post.url,
+            "num_comments": post.num_comments,
+            "body": post.selftext,
+            "created": post.created_utc,
+            "comments" : comment_list,
+            "External Link Titles" : externTitles
+        }
+        posts.append(data)    
 
     # Write all the posts into data.json
     with open(outputfile_name, 'w') as file:
         json.dump(posts, file)
+
+
 
 
 # This shows us that we could access the data 

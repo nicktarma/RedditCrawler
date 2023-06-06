@@ -12,6 +12,8 @@ from org.apache.lucene.queryparser.classic import QueryParser, MultiFieldQueryPa
 from org.apache.lucene.index import FieldInfo, IndexWriter, IndexWriterConfig, IndexOptions, DirectoryReader
 from org.apache.lucene.search import IndexSearcher, BoostQuery, Query
 from org.apache.lucene.search.similarities import BM25Similarity
+from datetime import datetime
+from org.apache.lucene.search import Sort, SortField
 
 sample_doc = [
     {
@@ -81,15 +83,6 @@ def create_index(dir):
         
         writer.addDocument(doc)
 
-
-
-    # for sample in sample_doc:
-    #     title = sample['title']
-    #     context = sample['context']
-    #     doc = Document()
-    #     doc.add(Field('Title', str(title), metaType))
-    #     doc.add(Field('Context', str(context), contextType))
-    #     writer.addDocument(doc)
     writer.close()
 
 
@@ -106,38 +99,30 @@ def retrieve(storedir, query):
     topkdocs = []
     for hit in topDocs:
         doc = searcher.doc(hit.doc)
+        post_id = doc.get("Id")
         
-        # "Upvotes" : doc.get("Score")
-        
+        upvote_score = doc.get("Score")
+        timestamp_str = doc.get("Created")
+
+        # Left off at adding the relevant material to the list
         topkdocs.append({
             "score": hit.score,
             "title": doc.get("Title"),
-            
-            
-            # "body": doc.get("Body"),
-            # "comments": doc.get("Comments"),
+            "bodyIntro": doc.get("Body")[:len(doc.get("Body"))//10] if len(doc.get("Body")) > 200 else doc.get("Body"),
+            "upvote_score": upvote_score,
+            "timestamp": timestamp_str,
+            "link" : doc.get("Url")
         })
-    print(topkdocs)
-
-
-
-# def retrieve(storedir, query):
-#    searchDir = NIOFSDirectory(Paths.get(storedir)) # Uses java.nio's File Channel's positional io when reading to avoid synchronization when reading from the same file.
-#    searcher = IndexSearcher(DirectoryReader.open(searchDir)) # Implements search over a single IndexReader
-
-#    parser = QueryParser('Body', StandardAnalyzer()) # Creating a QueryParser to parse within a contextType field using analyzer a i.e. StandardAnalyzer()
-#    parsed_query = parser.parse(query)
-
-#    topDocs = searcher.search(parsed_query, 10).scoreDocs
-#    topkdocs = []
-#    for hit in topDocs:
-#        doc = searcher.doc(hit.doc)
-#        topkdocs.append({
-#        "score": hit.score,
-#        "text": doc.get("Body")
-#        })
-#    print(topkdocs)
+    sorted_topkdocs = sorted(topkdocs, key=lambda x: (x["score"], x["upvote_score"], x["timestamp"]), reverse=True)
+    print(sorted_topkdocs)
+   
+   
 
 lucene.initVM(vmargs=['-Djava.awt.headless=true']) # Initializes the necessary Java environments for lucene to work correctly
 create_index('sample_lucene_index/')
 retrieve('sample_lucene_index/','people')
+
+
+
+
+

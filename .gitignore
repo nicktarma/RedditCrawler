@@ -1,2 +1,4 @@
 .vscode
 sample_lucene_index
+results
+results.py

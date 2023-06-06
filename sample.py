@@ -98,16 +98,22 @@ def retrieve(storedir, query):
     searcher = IndexSearcher(DirectoryReader.open(searchDir))
 
     fields_to_search = ["Title", "Body", "Comments"]
-    parser = MultiFieldQueryParser(fields_to_search, StandardAnalyzer())
-    parsed_query = parser.parse(query)
+    query_arr = [query]*3
+    parsed_query = MultiFieldQueryParser.parse(query_arr, fields_to_search, StandardAnalyzer())
+   #  parsed_query = QueryParser("Body", StandardAnalyzer())
 
     topDocs = searcher.search(parsed_query, 10).scoreDocs
     topkdocs = []
     for hit in topDocs:
         doc = searcher.doc(hit.doc)
+        
+        # "Upvotes" : doc.get("Score")
+        
         topkdocs.append({
             "score": hit.score,
             "title": doc.get("Title"),
+            
+            
             # "body": doc.get("Body"),
             # "comments": doc.get("Comments"),
         })

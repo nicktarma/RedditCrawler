@@ -15,20 +15,21 @@ from org.apache.lucene.search.similarities import BM25Similarity
 from datetime import datetime
 from org.apache.lucene.search import Sort, SortField
 
-sample_doc = [
-    {
-        'title' : 'A',
-        'context' : 'lucene is a useful tool for searching and information retrieval'
-    },
-    {
-        'title' : 'B',
-        'context' : 'Bert is a deep learning transformer model for encoding textual data'
-    },
-    {
-        'title' : 'C',
-        'context' : 'Django is a python web framework for building backend web APIs'
-    }
-]
+# Used for testing
+# sample_doc = [
+#     {
+#         'title' : 'A',
+#         'context' : 'lucene is a useful tool for searching and information retrieval'
+#     },
+#     {
+#         'title' : 'B',
+#         'context' : 'Bert is a deep learning transformer model for encoding textual data'
+#     },
+#     {
+#         'title' : 'C',
+#         'context' : 'Django is a python web framework for building backend web APIs'
+#     }
+# ]
 
 def create_index(dir):
     if not os.path.exists(dir):
@@ -48,7 +49,7 @@ def create_index(dir):
     contextType.setTokenized(True)
     contextType.setIndexOptions(IndexOptions.DOCS_AND_FREQS_AND_POSITIONS)
 
-    with open("data.json", 'r') as file:
+    with open("frugal.json", 'r') as file:
         data = json.load(file)
 
 
@@ -100,21 +101,27 @@ def retrieve(storedir, query):
     for hit in topDocs:
         doc = searcher.doc(hit.doc)
         post_id = doc.get("Id")
-        
         upvote_score = doc.get("Score")
         timestamp_str = doc.get("Created")
+
+
+        # now = datetime.strptime(timestamp_str, '%S')
+        # now.strftime('%Y-%m-%dT%H:%M:%S') + ('-%02d' % (timestamp_str.microsecond / 10000))
+        # timestamp_str = now
 
         # Left off at adding the relevant material to the list
         topkdocs.append({
             "score": hit.score,
             "title": doc.get("Title"),
-            "bodyIntro": doc.get("Body")[:len(doc.get("Body"))//10] if len(doc.get("Body")) > 200 else doc.get("Body"),
+            "bodyIntro": doc.get("Body")[:len(doc.get("Body"))//8] if len(doc.get("Body")) > 200 else doc.get("Body"),
             "upvote_score": upvote_score,
             "timestamp": timestamp_str,
             "link" : doc.get("Url")
         })
     sorted_topkdocs = sorted(topkdocs, key=lambda x: (x["score"], x["upvote_score"], x["timestamp"]), reverse=True)
-    print(sorted_topkdocs)
+    # print(sorted_topkdocs)
+    
+    return sorted_topkdocs
    
    
 

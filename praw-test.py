@@ -8,7 +8,8 @@ from bs4 import BeautifulSoup
 import re
 import sys
 
-
+# Variable that changes the number of posts collected
+limit_val = 200
 
 
 #This function is used to utilize the link to extract the titles for the websites within the body.
@@ -60,13 +61,20 @@ def redditCrawler(subreddit_name, outputfile_name):
 
     ml_subreddit = reddit.subreddit(subreddit_name)
 
+    # Tracks the number of posts parsed through
+    postNumber = 0
+
+    # The opening bracket of the list
+    with open(outputfile_name, 'a') as file:
+        file.write('[')
+
+
     '''
     -----------------------------
     Parsing through the top posts
     -----------------------------
     '''
-    postNumber = 0
-    for post in ml_subreddit.top(limit=1000):
+    for post in ml_subreddit.top(limit=limit_val):
 
         print("We're on post: ", postNumber)
         postNumber+=1
@@ -82,8 +90,8 @@ def redditCrawler(subreddit_name, outputfile_name):
 
         # Adding the all the comments from every post
         post.comments.replace_more(limit=None)
+        comment_list = []
         if post.num_comments > 0:
-            comment_list = []
             for comment in post.comments.list():
                 comment_list.append(comment.body)
 
@@ -111,12 +119,15 @@ def redditCrawler(subreddit_name, outputfile_name):
         }
         posts.append(data)
 
+        # Write all the posts into data.json
+        with open(outputfile_name, 'a') as file:
+            json.dump(data, file)
     '''
     -----------------------------
     Parsing through the hot posts
     -----------------------------
     '''
-    for post in ml_subreddit.hot(limit=1000):
+    for post in ml_subreddit.hot(limit=limit_val):
 
         print("We're on post: ", postNumber)
         postNumber+=1
@@ -132,8 +143,8 @@ def redditCrawler(subreddit_name, outputfile_name):
 
         # Adding the all the comments from every post
         post.comments.replace_more(limit=None)
+        comment_list = []
         if post.num_comments > 0:
-            comment_list = []
             for comment in post.comments.list():
                 comment_list.append(comment.body)
 
@@ -161,12 +172,15 @@ def redditCrawler(subreddit_name, outputfile_name):
         }
         posts.append(data)
 
+        # Write all the posts into data.json
+        with open(outputfile_name, 'a') as file:
+            json.dump([data], file)
     '''
     -----------------------------
     Parsing through the new posts
     -----------------------------
     '''
-    for post in ml_subreddit.new(limit=1000):
+    for post in ml_subreddit.new(limit=limit_val):
 
         print("We're on post: ", postNumber)
         postNumber+=1
@@ -182,8 +196,8 @@ def redditCrawler(subreddit_name, outputfile_name):
 
         # Adding the all the comments from every post
         post.comments.replace_more(limit=None)
+        comment_list = []
         if post.num_comments > 0:
-            comment_list = []
             for comment in post.comments.list():
                 comment_list.append(comment.body)
 
@@ -209,19 +223,16 @@ def redditCrawler(subreddit_name, outputfile_name):
             "comments" : comment_list,
             "External Link Titles" : externTitles
         }
-        posts.append(data)    
+        posts.append(data)
 
-    # Write all the posts into data.json
-    with open(outputfile_name, 'w') as file:
-        json.dump(posts, file)
+        # Write all the posts into data.json
+        with open(outputfile_name, 'a') as file:
+            json.dump(data, file)    
 
+    # The closing bracket of the list
+    with open(outputfile_name, 'a') as file:
+        file.write(']')
 
-
-
-# This shows us that we could access the data 
-# with open('data.json', 'r') as file:
-#     data = json.load(file)
-#     print(data[8]["score"])
 
 
 def main(input_method=None):

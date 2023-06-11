@@ -1,5 +1,5 @@
 import logging, sys
-logging.disable(sys.maxsize)
+# logging.disable(sys.maxsize)
 import json
 
 import lucene
@@ -48,41 +48,44 @@ def create_index(dir):
     contextType.setStored(True)
     contextType.setTokenized(True)
     contextType.setIndexOptions(IndexOptions.DOCS_AND_FREQS_AND_POSITIONS)
+    
+    fileNames = ["frugal.json", "data.json", "subreddit_financialindependence.json"]
 
-    with open("frugal.json", 'r') as file:
-        data = json.load(file)
+    for indivJson in fileNames:
+        with open(indivJson, 'r') as file:
+            data = json.load(file)
 
 
-    # i=0
-    for post in data:
-        
-        # Counting the number of posts 
-        # i+=1
-        
-        title = post.get('title')
-        score = post.get('score')
-        id = post.get('id')
-        subreddit = post.get('subreddit')
-        url = post.get('url')
-        num_comments = post.get('num_comments')
-        body = post.get('body')
-        created = post.get('created')
-        comments = post.get('comment_list')
-        externTitles = post.get('externTitles')
-        
-        doc = Document()
-        doc.add(Field('Title', str(title), contextType))
-        doc.add(Field('Score', str(score), metaType))
-        doc.add(Field('Id', str(id), metaType))
-        doc.add(Field('Subreddit', str(subreddit), metaType))
-        doc.add(Field('Url', str(url), metaType))
-        doc.add(Field('Num_comments', str(num_comments), metaType))
-        doc.add(Field('Body', str(body), contextType))
-        doc.add(Field('Created', str(created), metaType))
-        doc.add(Field('Comments', str(comments), contextType))
-        doc.add(Field('ExternTitles', str(externTitles), metaType))
-        
-        writer.addDocument(doc)
+        # i=0
+        for post in data:
+            
+            # Counting the number of posts 
+            # i+=1
+            
+            title = post.get('title')
+            score = post.get('score')
+            id = post.get('id')
+            subreddit = post.get('subreddit')
+            url = post.get('url')
+            num_comments = post.get('num_comments')
+            body = post.get('body')
+            created = post.get('created')
+            comments = post.get('comment_list')
+            externTitles = post.get('externTitles')
+            
+            doc = Document()
+            doc.add(Field('Title', str(title), contextType))
+            doc.add(Field('Score', str(score), metaType))
+            doc.add(Field('Id', str(id), metaType))
+            doc.add(Field('Subreddit', str(subreddit), metaType))
+            doc.add(Field('Url', str(url), metaType))
+            doc.add(Field('Num_comments', str(num_comments), metaType))
+            doc.add(Field('Body', str(body), contextType))
+            doc.add(Field('Created', str(created), metaType))
+            doc.add(Field('Comments', str(comments), contextType))
+            doc.add(Field('ExternTitles', str(externTitles), metaType))
+            
+            writer.addDocument(doc)
 
     writer.close()
 
@@ -105,11 +108,10 @@ def retrieve(storedir, query):
         timestamp_str = doc.get("Created")
 
 
-        # now = datetime.strptime(timestamp_str, '%S')
-        # now.strftime('%Y-%m-%dT%H:%M:%S') + ('-%02d' % (timestamp_str.microsecond / 10000))
-        # timestamp_str = now
+        # Convert Timestamp into Month, Day Year format
+        timestamp_int = float(timestamp_str)
+        timestamp_str = datetime.utcfromtimestamp(timestamp_int).strftime('%Y-%m-%d %H:%M:%S')
 
-        # Left off at adding the relevant material to the list
         topkdocs.append({
             "score": hit.score,
             "title": doc.get("Title"),

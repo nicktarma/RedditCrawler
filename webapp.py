@@ -1,7 +1,8 @@
 from flask import Flask, request, render_template
 from sample import retrieve
-import logging, sys
-logging.disable(sys.maxsize)
+# import logging, sys
+# # logging.disable(sys.maxsize)
+# #logging.basicConfig(level=logging.DEBUG)
 import json
 
 import lucene
@@ -27,16 +28,7 @@ app = Flask(__name__)
 def searchpage():
     return(render_template('searcharea.html'))
 
-# @app.route('/results', methods=['POST'])
-# def results():
-#     query = request.form['query']
 
-#     searchResults = 1
-
-#     if(query != ""):
-#         searchResults = retrieve('sample_lucene_index/', query)
-
-    # return(render_template('results.html', searchResults = searchResults))
 
 @app.route('/results', methods = ['POST', 'GET'])
 def results():
@@ -51,6 +43,11 @@ def results():
         print(docs)
 
         return render_template('results.html',lucene_output = docs)
+
+
+
+        # return render_template('results.html',lucene_output = {})
+    
 
 # lucene.initVM(vmargs=['-Djava.awt.headless=true'])
 

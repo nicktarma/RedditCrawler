@@ -1,0 +1,24 @@
+<html>
+   <b><text style="font-size: 40px"><center> <FONT COLOR=#555555>Here Are Your </FONT COLOR><FONT COLOR="BLUE">F</FONT COLOR><FONT COLOR="RED">R</FONT COLOR><FONT COLOR=#F4BC1C>O</FONT COLOR><FONT COLOR="BLUE">O</FONT COLOR><FONT COLOR="GREEN">G</FONT COLOR><FONT COLOR="RED">L</FONT COLOR><FONT COLOR=#F4BC1C>E</FONT COLOR> <FONT COLOR=#555555>Results</FONT COLOR></center></text></b>
+   <body>     
+      <form action = "/" method = "get">
+         
+         <p><input type = "submit" value = "Go Back!" /></p>
+         
+         <div>
+            {% for item in lucene_output %}
+
+            <p> 
+               <a href="{{item['link']}}" target="_blank" style="font-size: 20px"> <b> <FONT COLOR=BLUE> <u> {{item['title']}} </u> </FONT COLOR> </b> </a><br>
+               <a> <FONT COLOR=GREEN> {{item['link']}} </FONT COLOR> </a> <br>
+                  <FONT COLOR="GREY">{{item['timestamp']}} - </FONT COLOR> <FONT COLOR=#333333>{{item['bodyIntro']}}. . . .</FONT COLOR> 
+               <br> <b><text style="font-size: 12px">  Score: {{item['score']}}  </text> </b>        
+            </p>
+            {% endfor %}
+         </div>
+
+        <p><input type = "submit" value = "Go Back!" /></p>
+ 
+      </form>     
+   </body>
+</html>
